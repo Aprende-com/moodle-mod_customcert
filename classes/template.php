@@ -24,6 +24,8 @@
 
 namespace mod_customcert;
 
+use block_configurable_reports\github;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -263,6 +265,7 @@ class template {
         }
 
         require_once($CFG->libdir . '/pdflib.php');
+        require_once('../lib.php');
 
         // Get the pages for the template, there should always be at least one page for each template.
         if ($pages = $DB->get_records('customcert_pages', array('templateid' => $this->id), 'sequence ASC')) {
