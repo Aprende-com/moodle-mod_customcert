@@ -1,4 +1,11 @@
 # Changelog
+## 2022-08-09
+### Fixes
+* Add lib.php require for used function by **@Oscar Nadjar** in [44053518](../../commit/44053518)
+## 2022-08-08
+### Fixes
+* Delete composer.json in order to run phpunit workflows by **@Oscar Nadjar** in [eb2fadaf](../../commit/eb2fadaf)
+* Add library needed for mobile support by **@Oscar Nadjar** in [1db31e64](../../commit/1db31e64)
 ## 2022-06-14
 ### Features
 * add workflows for mod_customcert. by **@Diego Felipe Monroy** in [cde3214d](../../commit/cde3214d)
