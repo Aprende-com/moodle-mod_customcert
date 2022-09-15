@@ -1,4 +1,7 @@
 # Changelog
+## 2022-09-15
+### Fixes
+* corrected import paths by **@Peter Miller** in [937d4976](../../commit/937d4976)
 ## 2022-08-09
 ### Fixes
 * Add lib.php require for used function by **@Oscar Nadjar** in [44053518](../../commit/44053518)
