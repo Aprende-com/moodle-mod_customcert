@@ -35,10 +35,10 @@ jobs:
           echo "ISSUE_ID=${ISSUE_ID}" | tee -a "${GITHUB_ENV}"
 
       - name: "Single Plugin Pipeline Dispatch"
-        uses: peter-evans/repository-dispatch@v1.1.3
+        uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          repository: Aprende-com/devops
+          repository: Aprende-com/devops-workflows
           event-type: "single-plugin-pipeline-${{ env.K8S_NAMESPACE }}"
           client-payload: |
             {
@@ -53,3 +53,4 @@ jobs:
               "run_number": "${{ github.run_number }}",
               "actor": "${{ github.actor }}"
             }
+
