@@ -208,3 +208,6 @@ $string['width_help'] = 'This is the width of the certificate PDF in mm. For ref
 $string['userlanguage'] = 'Use user preferences';
 $string['languageoptions'] = 'Force Certificate Language';
 $string['userlanguage_help'] = 'You can force the language of the certificate to override the user\'s language preferences.';
+
+// Acess API.
+$string['customcert:managelanguages'] = 'Manage language on edit form';
