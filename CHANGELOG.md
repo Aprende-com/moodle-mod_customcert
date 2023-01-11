@@ -1,4 +1,7 @@
 # Changelog
+## 2022-12-23
+### Fixes
+* add langstring required for capacility by **@David OC** in [b3befb0e](../../commit/b3befb0e)
 ## 2022-09-15
 ### Fixes
 * corrected import paths by **@Peter Miller** in [937d4976](../../commit/937d4976)
