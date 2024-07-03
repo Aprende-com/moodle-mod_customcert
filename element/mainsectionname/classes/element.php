@@ -22,6 +22,7 @@ namespace customcertelement_mainsectionname;
 
 defined('MOODLE_INTERNAL') || die();
 
+use \format_diplomados\validation\ruleset\curso_level_certificates;
 
 class element extends \mod_customcert\element {
 
@@ -35,21 +36,20 @@ class element extends \mod_customcert\element {
         // Get the course main sections.
         $arrmainsections = [];
 
-        $sql = "SELECT cs.id, cs.name
-                FROM {course_format_options} as fo
-                JOIN {course_sections} cs ON
-                    fo.courseid = cs.course
-                    AND fo.value = cs.id
-                where cs.course = :course and fo.name = 'mainsectionid' 
-                        and visible=1 and fo.value > 0
-                group by cs.section";
-        $params = ['course' => $COURSE->id];
+        $modinfo = get_fast_modinfo($COURSE);
 
-        // get records
-        $sections = $DB->get_records_sql($sql, $params);
+        $modinfo = get_fast_modinfo($COURSE);
 
-        foreach ($sections as $section) {
-            $arrmainsections[$section->id] = $section->name;
+        $sections = $modinfo->get_section_info_all();
+        
+        $format = course_get_format($COURSE);
+
+        foreach($sections as $section) {
+            $parent = $format->get_section_parent($section);
+            if(empty($parent) && $section->section != 0) {
+                $name = $section->name ?? get_string('sectionname', 'format_diplomados') . $section->section;
+                $arrmainsections[$section->id] = $section->name;
+            }
         }
 
         // Create the select box where the user field is selected.
@@ -119,18 +119,71 @@ class element extends \mod_customcert\element {
      * @return string
      */
     protected function get_mainsectionname_value() : string {
-        global $DB;
+        global $DB, $COURSE;
         // The user field to display.
         $field = $this->get_data();
         $value = '';
+        
         if (is_number($field)) { // Must be a custom course profile field.
             if ($field = $DB->get_record('course_sections', array('id' => $field))) {
                 // Found the field name, let's update the value to display.
                 $value = $field->name;
             }
         }
-
+        
         $context = \mod_customcert\element_helper::get_context($this->get_id());
+        $modinfo = get_fast_modinfo($COURSE);
+
+        $sectiondata = array();
+        
+        // Get the page.
+        $page = $DB->get_record('customcert_pages', array('id' => $this->get_pageid()), '*', MUST_EXIST);
+        // Get the customcert this page belongs to.
+        $customcert = $DB->get_record('customcert', array('templateid' => $page->templateid), '*', MUST_EXIST);
+
+        $ruleset = new curso_level_certificates($COURSE->id);
+        $ruleset::get_validation_errors();
+        $cursoSections = curso_level_certificates::$cursoSections;
+        $sectioninfo = $modinfo->get_section_info_all();
+        
+
+        foreach ($cursoSections as $cursoSection) {
+            [$spanish_cert, $english_cert] = $this->get_curso_certificates($cursoSection);
+
+            $sectiondata[$spanish_cert->instance]['sectionname'] = $sectioninfo[$cursoSection]->name;
+        }
+
+        $value = $sectiondata[$customcert->id]['sectionname'] ?? '';
+
         return format_string($value, true, ['context' => $context]);
+    }
+
+    public function get_curso_certificates(int $sectionNumber) : array {
+        global $COURSE;
+        $certificates = [null, null];
+        $modinfo = get_fast_modinfo($COURSE);
+
+        $sectionMapping = curso_level_certificates::get_ep_section_to_curso_section_mapping();
+
+        $epSectionNumber = array_search($sectionNumber, $sectionMapping);
+
+        if (!$epSectionNumber) {
+            return $certificates;
+        }
+
+        foreach ($modinfo->sections[$epSectionNumber] as $cmid) {
+            $cm = $modinfo->cms[$cmid];
+            if ($cm->modname === 'customcert') {
+                if (is_null($certificates[0])) {
+                    $certificates[0] = $cm;
+                } else if (is_null($certificates[1])) {
+                    $certificates[1] = $cm;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return $certificates;
     }
 }

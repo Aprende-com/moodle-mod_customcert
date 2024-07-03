@@ -18,7 +18,7 @@
  * Strings for component 'customcertelement_mainsectionname', language 'en'.
  */
 
-$string['pluginname'] = 'Main section name';
+$string['pluginname'] = 'Curso section';
 $string['privacy:metadata'] = 'The mainsectionname plugin does not store any personal data.';
-$string['mainsectionname'] = 'Main section name';
+$string['mainsectionname'] = 'Curso section';
 $string['mainsectionname_help'] = 'This is the main section name that will be displayed on the PDF.';
