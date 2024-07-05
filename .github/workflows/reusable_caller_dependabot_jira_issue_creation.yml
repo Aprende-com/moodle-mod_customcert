@@ -1,0 +1,63 @@
+--- # 2024 06 28
+
+name: 'Caller Workflows - Dependabot Jira Issue Creation'
+on:
+  pull_request:
+    types: [opened, reopened]
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  config:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      repository: ${{ steps.set_vars.outputs.repo }}
+      team: ${{ steps.set_vars.outputs.team }}
+
+    steps:
+
+    - name: "Checkout"
+      uses: actions/checkout@v4
+
+    - name: Set variables
+      id: set_vars
+      run: |
+        # Extract the team from CODEOWNERS file and the repository from github
+        TEAM="moodle-dev"
+        REPO=$(echo "${{ github.repository }}" | sed 's/^Aprende-com\///')
+
+        # Set outputs
+        echo "repo=$REPO" >> $GITHUB_OUTPUT
+        echo "team=$TEAM" >> $GITHUB_OUTPUT
+
+    - name: "devops-actions: checkout"
+      if: failure()
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        repository: Aprende-com/devops-actions
+        path: devops-actions
+
+    - uses: ./devops-actions/slack-notify
+      if: failure()
+      with:
+        title: "Dependabot Jira issue creation for ${{ github.event.pull_request.html_url }}/checks: Failed"
+        status: 'failure'
+
+  create_issue:
+    needs: config
+    uses: Aprende-com/devops-workflows/.github/workflows/reusable_dependabot_jira_issue_creation.yml@main
+    with:
+      repository: ${{ needs.config.outputs.repository }}
+      title: ${{ github.event.pull_request.title }}
+      url: ${{ github.event.pull_request.html_url }}
+      team: ${{ needs.config.outputs.team }}
+      fields: '{"customfield_10126": {"id": "10131"}, "customfield_10125": [{"id": "10136"}]}'
+    secrets:
+       JIRA_USER: ${{ secrets.JIRA_USER }}
+       JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
