@@ -151,6 +151,8 @@ class element extends \mod_customcert\element {
             [$spanish_cert, $english_cert] = $this->get_curso_certificates($cursoSection);
 
             $sectiondata[$spanish_cert->instance]['sectionname'] = $sectioninfo[$cursoSection]->name;
+            $sectiondata[$english_cert->instance]['sectionname'] = $sectioninfo[$cursoSection]->name;
+            
         }
 
         $value = $sectiondata[$customcert->id]['sectionname'] ?? '';
