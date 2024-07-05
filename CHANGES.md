@@ -1,10 +1,25 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. 
+All notable changes to this project will be documented in this file.
 
 Note - All hash comments refer to the issue number. Eg. #169 refers to https://github.com/mdjnelson/moodle-mod_customcert/issues/169.
 
-## [3.11.2] - 2021-??-??
+## [4.0.3] - 2023-02-07
+### Added
+- You can now optionally force the language of a certificate.
+
+## [4.0.2] - 2023-01-26
+
+- Fix problem repositioning elements (#500).
+
+## [4.0.1] - 2022-11-07
+
+### Fixed
+
+- Fix problem repositioning elements (#513).
+- Fixed title and description shown twice (#521).
+
+## [3.11.2] - 2022-11-07
 
 ### Fixed
 - Fix places not using the multi-language filter (#433).
@@ -13,6 +28,7 @@ Note - All hash comments refer to the issue number. Eg. #169 refers to https://g
 - Fix error message when we have custom profile fields (#465).
 - Respect multiple languages in manage template page title (#467).
 - Add field exist check for alignment field in upgrade script to prevent upgrades from dying.
+- Stop using deprecated pipe coreToLocaleString.
 
 ### Changed
 - User breadcrumbs on the my_certificates.php page changes when a course is specified (#469).
@@ -21,7 +37,7 @@ Note - All hash comments refer to the issue number. Eg. #169 refers to https://g
 - You can now choose the course short or full name to display (#415).
 - You can now select the alignment for all text elements (#121).
 - Ability to add a relative date (#389).
- 
+
 ## [3.11.1] - 2021-06-13
 
 ### Fixed
@@ -216,15 +232,15 @@ Note - All hash comments refer to the issue number. Eg. #169 refers to https://g
     their certificate. It also allows teachers to view the
     list of issued certificates, with the ability to revoke
     any.
-    
-    This is for the soon-to-be released Moodle Mobile v3.5.0 
+
+    This is for the soon-to-be released Moodle Mobile v3.5.0
     (not to be confused with your Moodle site version) and
     will not work on Mobile versions earlier than this.
-    
+
     If you are running a Moodle site on version 3.4 or below
     you will need to install the local_mobile plugin in order
     for this to work.
-    
+
     If you are running a Moodle site on version 3.0 or below
     then you will need to upgrade.
 ```

@@ -58,7 +58,7 @@ class lib_test extends advanced_testcase {
 
         $activelangs = get_string_manager()->get_list_of_translations();
         // Testing not installed languages.
-        foreach($testlangs as $lang) {
+        foreach ($testlangs as $lang) {
             $forced = mod_customcert_force_current_language($lang);
             $this->assertFalse($forced);
             $this->assertArrayNotHasKey($lang, $activelangs);
@@ -73,7 +73,7 @@ class lib_test extends advanced_testcase {
         $this->install_languagues();
 
         $activelangs = get_string_manager()->get_list_of_translations();
-        foreach($testlangs as $lang) {
+        foreach ($testlangs as $lang) {
             $forced = mod_customcert_force_current_language($lang);
             $this->assertTrue($forced);
             $this->assertArrayHasKey($lang, $activelangs);
