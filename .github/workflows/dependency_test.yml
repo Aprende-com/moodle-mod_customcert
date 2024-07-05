@@ -1,8 +1,10 @@
---- # 2022 12 01
+--- # 2023 03 02
 
 name: "Plugin Dependency Version Validator"
 on:
   pull_request:
+    paths-ignore:
+      - '.github/**'
     branches:
       - master
 
@@ -25,7 +27,7 @@ jobs:
     steps:
 
       - name: "devops: checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: Aprende-com/devops-actions
           path: devops-actions
@@ -60,14 +62,14 @@ jobs:
           echo "PLUGIN_REF=$GITHUB_HEAD_REF" | tee -a "${GITHUB_ENV}"
     
       - name: "moodle-dev: clone"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: Aprende-com/moodle-dev
           path: "moodle-dev"
           
       - name: "plugin: clone"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: ${{ env.PLUGIN_REPO }}
@@ -77,12 +79,12 @@ jobs:
       - name: "devops/plugins: get submodule URLs"
         run: |
           cd moodle-dev
-          PLUGIN_URLS=$(cat .gitmodules | grep url | grep -v bitbucket | awk '{print $3}'| sed 's,git@github.com:,https://raw.githubusercontent.com/,g' | sed 's,.git,/master/version.php,g' | sed 's,https://raw/master/version.phphubusercontent.com,https://raw.githubusercontent.com,g' | sed 's,https://master/version.phphub.com,https://raw.githubusercontent.com,g' | sed 's,https://raw.githubusercontent.com/jleyva/moodle-block_configurablereports/master/version.php,https://raw.githubusercontent.com/jleyva/moodle-block_configurablereports/MOODLE_36_STABLE/version.php,g')
+          PLUGIN_URLS=$(grep "aprende = true" .gitmodules -B1 | grep -v "aprende = true\|\-\-"   | awk '{FS="="} {print $2}' |sed 's/\.git/\/master\/version.php/g' |sed 's/git\@github.com\:/https\:\/\/raw\.githubusercontent\.com\//g'|awk '{FS=" "} {print $1}'|sed 's/\=//g' )
           PLUGIN_URLS=$(echo ${PLUGIN_URLS})  # Remove newlines
           echo "PLUGIN_URLS=${PLUGIN_URLS}" | tee -a "${GITHUB_ENV}"
           
       - name: "devops-actions: checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: Aprende-com/devops-actions
           path: devops-actions
@@ -95,4 +97,3 @@ jobs:
           urls: ${{ env.PLUGIN_URLS }}
           token: "token ${{ env.GITHUB_TOKEN }}"
           
-

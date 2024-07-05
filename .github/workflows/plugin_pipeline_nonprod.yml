@@ -1,13 +1,14 @@
 ---  # 2023 09 13
 
-name: "Single Plugin Pipeline Dispatch"
+name: "Single Plugin Pipeline NONPROD Dispatch"
 on:
   workflow_dispatch:
   push:
     paths-ignore:
       - '.github/**'
     branches:
-      - master
+      - dev
+      - qa
 
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}  # required
@@ -29,7 +30,7 @@ jobs:
           HEAD_COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           HEAD_COMMIT_MESSAGE=${HEAD_COMMIT_MESSAGE//[^a-zA-Z0-9_ .]/}
           SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-8)
-          ISSUE_ID=$(echo "${{ github.event.head_commit.message }}" | grep -m1 -Po "(LMSDEV|PLA)-[0-9]*" || true)
+          ISSUE_ID=$(echo "${{ github.event.head_commit.message }}" | grep -m1 -Po "LMSDEV-[0-9]*" || true)
 
           # Save them to ENV
           echo "WORKFLOW_URL=${WORKFLOW_URL}" | tee -a "${GITHUB_ENV}"
@@ -43,7 +44,7 @@ jobs:
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           repository: Aprende-com/devops-workflows
-          event-type: "single-plugin-pipeline-${{ env.K8S_NAMESPACE }}"
+          event-type: "single-plugin-pipeline-nonprod-${{ env.K8S_NAMESPACE }}"
           client-payload: |
             {
               "repository": "${{ github.repository }}",
@@ -52,10 +53,10 @@ jobs:
               "sha_short": "${{ env.SHA_SHORT }}",
               "workflow": "${{ github.workflow }}",
               "head_commit_message": "${{ env.HEAD_COMMIT_MESSAGE }}",
-              "issue_id": "${{ env.ISSUE_ID }}",
               "run_id": "${{ github.run_id }}",
               "run_number": "${{ github.run_number }}",
-              "actor": "${{ github.actor }}"
+              "actor": "${{ github.actor }}",
+              "event_type": "single-plugin-pipeline-nonprod"
             }
 
       - name: "get variables for Slack notification"
