@@ -27,51 +27,6 @@ use \format_diplomados\validation\ruleset\curso_level_certificates;
 class element extends \mod_customcert\element {
 
     /**
-     * This function renders the form elements when adding a customcert element.
-     *
-     * @param \MoodleQuickForm $mform the edit form instance
-     */
-    public function render_form_elements($mform) {
-        global $DB, $COURSE;
-        // Get the course main sections.
-        $arrmainsections = [];
-
-        $modinfo = get_fast_modinfo($COURSE);
-
-        $modinfo = get_fast_modinfo($COURSE);
-
-        $sections = $modinfo->get_section_info_all();
-        
-        $format = course_get_format($COURSE);
-
-        foreach($sections as $section) {
-            $parent = $format->get_section_parent($section);
-            if(empty($parent) && $section->section != 0) {
-                $name = $section->name ?? get_string('sectionname', 'format_diplomados') . $section->section;
-                $arrmainsections[$section->id] = $section->name;
-            }
-        }
-
-        // Create the select box where the user field is selected.
-        $mform->addElement('select', 'mainsectionname', get_string('mainsectionname', 'customcertelement_mainsectionname'), $arrmainsections);
-        $mform->setType('mainsectionname', PARAM_ALPHANUM);
-        $mform->addHelpButton('mainsectionname', 'mainsectionname', 'customcertelement_mainsectionname');
-
-        parent::render_form_elements($mform);
-    }
-
-    /**
-     * This will handle how form data will be saved into the data column in the
-     * customcert_elements table.
-     *
-     * @param \stdClass $data the form data
-     * @return string the text
-     */
-    public function save_unique_data($data) {
-        return $data->mainsectionname;
-    }
-
-    /**
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
@@ -120,16 +75,8 @@ class element extends \mod_customcert\element {
      */
     protected function get_mainsectionname_value() : string {
         global $DB, $COURSE;
-        // The user field to display.
-        $field = $this->get_data();
+       
         $value = '';
-        
-        if (is_number($field)) { // Must be a custom course profile field.
-            if ($field = $DB->get_record('course_sections', array('id' => $field))) {
-                // Found the field name, let's update the value to display.
-                $value = $field->name;
-            }
-        }
         
         $context = \mod_customcert\element_helper::get_context($this->get_id());
         $modinfo = get_fast_modinfo($COURSE);
