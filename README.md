@@ -2,6 +2,7 @@
 
 This activity allows the dynamic generation of PDF certificates with complete customisation via the web browser.
 
+
 ## Installation
 
 There are two installation methods that are available. 
@@ -37,3 +38,5 @@ Visit the [wiki page](https://docs.moodle.org/en/Custom_certificate_module "Wiki
 ## License
 
 Licensed under the [GNU GPL License](http://www.gnu.org/copyleft/gpl.html).
+
+
