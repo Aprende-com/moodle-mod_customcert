@@ -35,10 +35,13 @@ class element extends \mod_customcert\element {
      */
     public function render($pdf, $preview, $user) {
 
-        $courseid = \mod_customcert\element_helper::get_courseid($this->id);
-        $course = get_course($courseid);
-
-        \mod_customcert\element_helper::render_content($pdf, $this, $this->get_mainsectionname_value());
+        if($preview) {
+            \mod_customcert\element_helper::render_content($pdf, $this, "Main Section Name");
+        }else{
+            $courseid = \mod_customcert\element_helper::get_courseid($this->id);
+            $course = get_course($courseid);
+            \mod_customcert\element_helper::render_content($pdf, $this, $this->get_mainsectionname_value());
+        }
     }
 
     /**
