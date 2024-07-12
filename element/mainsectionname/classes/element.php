@@ -51,8 +51,7 @@ class element extends \mod_customcert\element {
      * drag and drop interface to position it.
      */
     public function render_html() {
-        global $COURSE;
-
+  
         return \mod_customcert\element_helper::render_html_content($this, $this->get_mainsectionname_value());
     }
 
@@ -77,12 +76,14 @@ class element extends \mod_customcert\element {
      * @return string
      */
     protected function get_mainsectionname_value() : string {
-        global $DB, $COURSE;
+        global $DB;
        
         $value = '';
         
+        $courseid = \mod_customcert\element_helper::get_courseid($this->get_id());
+        $course = get_course($courseid);
         $context = \mod_customcert\element_helper::get_context($this->get_id());
-        $modinfo = get_fast_modinfo($COURSE);
+        $modinfo = get_fast_modinfo($course);
 
         $sectiondata = array();
         
@@ -91,14 +92,14 @@ class element extends \mod_customcert\element {
         // Get the customcert this page belongs to.
         $customcert = $DB->get_record('customcert', array('templateid' => $page->templateid), '*', MUST_EXIST);
 
-        $ruleset = new curso_level_certificates($COURSE->id);
+        $ruleset = new curso_level_certificates($course->id);
         $ruleset::get_validation_errors();
         $cursoSections = curso_level_certificates::$cursoSections;
         $sectioninfo = $modinfo->get_section_info_all();
         
 
         foreach ($cursoSections as $cursoSection) {
-            [$spanish_cert, $english_cert] = $this->get_curso_certificates($cursoSection);
+            [$spanish_cert, $english_cert] = $this->get_curso_certificates($cursoSection, $course);
 
             $sectiondata[$spanish_cert->instance]['sectionname'] = $sectioninfo[$cursoSection]->name;
             $sectiondata[$english_cert->instance]['sectionname'] = $sectioninfo[$cursoSection]->name;
@@ -110,10 +111,9 @@ class element extends \mod_customcert\element {
         return format_string($value, true, ['context' => $context]);
     }
 
-    public function get_curso_certificates(int $sectionNumber) : array {
-        global $COURSE;
+    public function get_curso_certificates(int $sectionNumber, $course) : array {
         $certificates = [null, null];
-        $modinfo = get_fast_modinfo($COURSE);
+        $modinfo = get_fast_modinfo($course);
 
         $sectionMapping = curso_level_certificates::get_ep_section_to_curso_section_mapping();
 
