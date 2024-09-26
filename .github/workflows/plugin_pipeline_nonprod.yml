@@ -86,4 +86,3 @@ jobs:
           title: "<https://github.com/${{ github.repository }}/commit/${{ env.SHA_SHORT }}|Deployment> to [${{ env.K8S_NAMESPACE }}]: ${{ job.status }}"
           status: "${{ job.status }}"
           text: "See <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} #${{ github.run_number }}> for more information"
-
