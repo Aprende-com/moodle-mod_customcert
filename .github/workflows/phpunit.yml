@@ -1,4 +1,4 @@
---- # 2023 03 02
+--- # 2024 08 13
 
 name: "PHPUnit"
 on:
@@ -10,11 +10,6 @@ on:
       - main
 
 env:
-  GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-  # Comment to use 
-  # AWS_REGION: us-east-1
-  # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   MOODLE_LOCAL: moodle-dev
 
 jobs:
@@ -27,18 +22,21 @@ jobs:
 
     steps:
 
-      - name: "devops: checkout"
-        uses: actions/checkout@v4
-        with:
-          repository: Aprende-com/devops-actions
-          path: devops-actions
-          token: ${{ env.GITHUB_TOKEN }}
-
       - run: |
           echo "PLUGIN_REPO=$GITHUB_REPOSITORY" | tee -a "${GITHUB_ENV}"
           echo "PLUGIN_REF=$GITHUB_HEAD_REF" | tee -a "${GITHUB_ENV}"
 
-      - uses: ./devops-actions/lms/plugin-getpath
+      - name: "Generate Github App Token"
+        uses: Aprende-com/devops-workflows/actions/generate-github-token@main
+        id: app-token
+        with:
+          secret_key: ${{ secrets.DEVOPS_APP_SECRET_KEY }}
+          app_id: ${{ secrets.DEVOPS_APP_ID }}
+          #repositories: "moodle-dev"
+
+      - uses: Aprende-com/devops-workflows/actions/lms/plugin/getpath@main
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - id: config
         run: |
@@ -56,31 +54,36 @@ jobs:
       PLUGIN_PATH: ${{ needs.config.outputs.plugin_path }}
 
     steps:
-      - name: "devops: checkout"
-        uses: actions/checkout@v4
-        with:
-          repository: Aprende-com/devops-actions
-          path: devops-actions
-          token: ${{ env.GITHUB_TOKEN }}
 
       - name: "setting up runner"
-        uses: ./devops-actions/lms/runner-config
-        
-      - name: "cloning moodle-dev"
-        uses: ./devops-actions/lms/core-clone
+        uses: Aprende-com/devops-workflows/actions/lms/runner-config@main
+
+      - name: "Generate Github App Token"
+        uses: Aprende-com/devops-workflows/actions/generate-github-token@main
+        id: app-token
         with:
-          submodules: true  
+          secret_key: ${{ secrets.DEVOPS_APP_SECRET_KEY }}
+          app_id: ${{ secrets.DEVOPS_APP_ID }}
+          #repositories: "moodle-dev,devops-workflows,${{ env.PLUGIN_REPO }}"
+
+      - name: "cloning moodle-dev"
+        uses: Aprende-com/devops-workflows/actions/lms/core-clone@main
+        with:
+          submodules: true
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: "plugin: clone"
         uses: actions/checkout@v4
         with:
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           repository: ${{ env.PLUGIN_REPO }}
           path: moodle-dev/${{ env.PLUGIN_PATH }}
           ref: ${{ env.PLUGIN_REF }}
 
       - name: "plugin: run composer"
-        uses: ./devops-actions/lms/plugin/composer
+        uses: Aprende-com/devops-workflows/actions/lms/plugin/composer@main
 
       - name: "Run PHPUnit"
-        uses: ./devops-actions/lms/plugin-phpunit
+        uses: Aprende-com/devops-workflows/actions/lms/plugin/phpunit@main
+        with:
+          token: ${{ steps.app-token.outputs.token }}
