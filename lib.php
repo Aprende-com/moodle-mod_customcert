@@ -436,17 +436,15 @@ function mod_customcert_get_fontawesome_icon_map() {
  * @return bool
  */
 function mod_customcert_force_current_language($language): bool {
-    global $USER;
-
     $forced = false;
     if (empty($language)) {
         return $forced;
     }
 
     $activelangs = get_string_manager()->get_list_of_translations();
-    $userlang = $USER->lang;
+    $currentlang = current_language();
 
-    if (array_key_exists($language, $activelangs) && $language != $userlang) {
+    if (array_key_exists($language, $activelangs) && $language != $currentlang) {
         force_current_language($language);
         $forced = true;
     }
