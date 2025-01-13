@@ -74,6 +74,7 @@ class element extends \mod_customcert\element {
         $modinfo = get_fast_modinfo($course);
 
         $ruleset = new curso_level_certificates($course->id);
+        $ruleset::get_validation_errors();
         $curso_section_numbers = curso_level_certificates::get_curso_sections();
 
         if($preview && empty($curso_section_numbers)) {
